@@ -1,0 +1,34 @@
+{
+  "name": "seo-audit-webapp",
+  "version": "1.0.0",
+  "description": "SEO Audit Web Application - React SPA + Express API",
+  "main": "server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd backend && npm run dev",
+    "client:dev": "cd frontend && npm start",
+    "build": "cd frontend && npm install && npm run build",
+    "start": "node server.js",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "heroku-postbuild": "npm run build"
+  },
+  "keywords": [
+    "seo",
+    "audit",
+    "react",
+    "express",
+    "webapp"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

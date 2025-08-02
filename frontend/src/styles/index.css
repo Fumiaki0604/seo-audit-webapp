@@ -1,0 +1,140 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4rem 0;
+  margin-bottom: 2rem;
+}
+
+.card-custom {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.score-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 auto 1rem;
+}
+
+.score-high {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+}
+
+.score-medium {
+  background: linear-gradient(135deg, #FF9800, #f57c00);
+  color: white;
+}
+
+.score-low {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+}
+
+.issue-item {
+  padding: 10px 15px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border-left: 4px solid;
+}
+
+.issue-critical {
+  background-color: #ffebee;
+  border-left-color: #f44336;
+}
+
+.issue-warning {
+  background-color: #fff3e0;
+  border-left-color: #ff9800;
+}
+
+.issue-info {
+  background-color: #e3f2fd;
+  border-left-color: #2196f3;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.url-input {
+  border-radius: 25px;
+  border: 2px solid #e9ecef;
+  padding: 15px 20px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.url-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.progress-custom {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.category-score {
+  background: linear-gradient(90deg, #e9ecef 0%, var(--score-color) var(--score-percent));
+  height: 25px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-score-text {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
