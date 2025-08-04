@@ -32,6 +32,16 @@ const buildPath = path.join(__dirname, 'frontend/build');
 // Debug: Log build path and directory contents
 console.log('🔍 Build path:', buildPath);
 console.log('📁 Build directory exists:', fs.existsSync(buildPath));
+console.log('📁 Current working directory:', process.cwd());
+console.log('📁 __dirname:', __dirname);
+
+// Check frontend directory structure
+const frontendPath = path.join(__dirname, 'frontend');
+console.log('📂 Frontend directory exists:', fs.existsSync(frontendPath));
+if (fs.existsSync(frontendPath)) {
+  console.log('📂 Frontend directory contents:', fs.readdirSync(frontendPath));
+}
+
 if (fs.existsSync(buildPath)) {
   console.log('📂 Build directory contents:', fs.readdirSync(buildPath));
 } else {
@@ -47,6 +57,7 @@ if (fs.existsSync(buildPath)) {
     console.log(`🔍 Checking alternative path: ${altPath}`);
     if (fs.existsSync(altPath)) {
       console.log(`✅ Found build at: ${altPath}`);
+      console.log(`📂 Contents: ${fs.readdirSync(altPath)}`);
     }
   }
 }

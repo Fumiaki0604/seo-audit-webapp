@@ -42,4 +42,4 @@ coverage/
 
 # Package lock files (keep for production consistency)
 # package-lock.json
-# yarn.lock
+yarn.lock

@@ -2,11 +2,25 @@ services:
   - type: web
     name: seo-audit-webapp
     env: node
-    buildCommand: npm ci && cd backend && npm ci && cd ../frontend && npm ci && npm run build
+    buildCommand: |
+      npm ci
+      cd backend && npm ci
+      cd ../frontend && npm ci && npm run build
+      cd ..
+      echo "Build completed, checking build directory..."
+      ls -la frontend/
+      if [ -d "frontend/build" ]; then
+        echo "✅ Build directory exists"
+        ls -la frontend/build/
+      else
+        echo "❌ Build directory missing"
+      fi
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: CI
+        value: false
+      - key: GENERATE_SOURCEMAP
         value: false
     healthCheckPath: /health
