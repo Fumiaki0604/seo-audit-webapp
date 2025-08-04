@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+// In production, use relative URLs; in development, use localhost
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '' // Use relative URLs in production (same origin)
+  : process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,6 +17,8 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    console.log(`🎯 Base URL: ${config.baseURL}`);
+    console.log(`🌍 Full URL: ${config.baseURL}${config.url}`);
     return config;
   },
   (error) => {

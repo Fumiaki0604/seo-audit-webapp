@@ -10,9 +10,29 @@ const PORT = process.env.PORT || 3000;
 const analyzeRoutes = require('./backend/src/api/analyze');
 const { errorHandler, notFound } = require('./backend/src/middleware/errorHandler');
 
-// Security and middleware (simplified for production)
+// Security and middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Security headers
+app.use((req, res, next) => {
+  // Content Security Policy
+  res.setHeader('Content-Security-Policy', 
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
+    "font-src 'self' https://cdn.jsdelivr.net; " +
+    "img-src 'self' data: https:; " +
+    "connect-src 'self'"
+  );
+  
+  // Other security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  next();
+});
 
 // API routes - must come before static files
 app.use('/api/analyze', analyzeRoutes);
