@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,8 +46,29 @@ if (fs.existsSync(frontendPath)) {
 if (fs.existsSync(buildPath)) {
   console.log('📂 Build directory contents:', fs.readdirSync(buildPath));
 } else {
-  console.log('❌ Build directory not found, checking alternatives...');
-  // Check if we're in a different directory structure (Render deployment)
+  console.log('❌ Build directory not found, attempting to build...');
+  
+  // Attempt to build frontend if not found
+  try {
+    console.log('🔨 Running frontend build...');
+    const frontendPath = path.join(__dirname, 'frontend');
+    if (fs.existsSync(frontendPath)) {
+      process.chdir(frontendPath);
+      execSync('npm run build', { stdio: 'inherit' });
+      process.chdir(__dirname);
+      
+      if (fs.existsSync(buildPath)) {
+        console.log('✅ Build completed successfully!');
+        console.log('📂 Build directory contents:', fs.readdirSync(buildPath));
+      } else {
+        console.log('❌ Build completed but directory not found');
+      }
+    }
+  } catch (error) {
+    console.log('❌ Build failed:', error.message);
+  }
+  
+  // Check alternative paths as fallback
   const alternativePaths = [
     path.join(__dirname, 'build'),
     path.join(process.cwd(), 'frontend/build'),

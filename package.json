@@ -7,7 +7,7 @@
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "server:dev": "cd backend && npm run dev",
     "client:dev": "cd frontend && npm start",
-    "build": "npm ci && cd backend && npm ci && cd ../frontend && npm ci && npm run build",
+    "build": "npm install && cd backend && npm install && cd ../frontend && npm install && npm run build && cd .. && echo 'Build completed' && ls -la frontend/",
     "start": "node server.js",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "heroku-postbuild": "npm run build",
