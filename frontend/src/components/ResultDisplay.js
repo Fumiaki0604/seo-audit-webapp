@@ -192,7 +192,10 @@ const ResultDisplay = ({ result, onNewAnalysis }) => {
                       {criticalIssues.map((issue, index) => (
                         <div key={index} className={`issue-item ${getIssueClass(issue.severity)}`}>
                           <i className={`${getIssueIcon(issue.severity)} me-2`}></i>
-                          {issue.message}
+                          <div>
+                            <div>{issue.message}</div>
+                            {issue.details && <div className="text-muted small mt-1">{issue.details}</div>}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -207,7 +210,10 @@ const ResultDisplay = ({ result, onNewAnalysis }) => {
                       {warningIssues.map((issue, index) => (
                         <div key={index} className={`issue-item ${getIssueClass(issue.severity)}`}>
                           <i className={`${getIssueIcon(issue.severity)} me-2`}></i>
-                          {issue.message}
+                          <div>
+                            <div>{issue.message}</div>
+                            {issue.details && <div className="text-muted small mt-1">{issue.details}</div>}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -222,7 +228,10 @@ const ResultDisplay = ({ result, onNewAnalysis }) => {
                       {infoIssues.map((issue, index) => (
                         <div key={index} className={`issue-item ${getIssueClass(issue.severity)}`}>
                           <i className={`${getIssueIcon(issue.severity)} me-2`}></i>
-                          {issue.message}
+                          <div>
+                            <div>{issue.message}</div>
+                            {issue.details && <div className="text-muted small mt-1">{issue.details}</div>}
+                          </div>
                         </div>
                       ))}
                     </div>
