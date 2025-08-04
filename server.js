@@ -54,7 +54,15 @@ if (fs.existsSync(buildPath)) {
     const frontendPath = path.join(__dirname, 'frontend');
     if (fs.existsSync(frontendPath)) {
       process.chdir(frontendPath);
+      
+      // First install dependencies
+      console.log('📦 Installing frontend dependencies...');
+      execSync('npm install', { stdio: 'inherit' });
+      
+      // Then build
+      console.log('🏗️ Building frontend...');
       execSync('npm run build', { stdio: 'inherit' });
+      
       process.chdir(__dirname);
       
       if (fs.existsSync(buildPath)) {
@@ -66,6 +74,23 @@ if (fs.existsSync(buildPath)) {
     }
   } catch (error) {
     console.log('❌ Build failed:', error.message);
+    console.log('🔍 Attempting alternative build strategy...');
+    
+    // Alternative: run from root with full path
+    try {
+      process.chdir(__dirname);
+      console.log('📦 Installing all dependencies from root...');
+      execSync('npm run install:all', { stdio: 'inherit' });
+      console.log('🏗️ Building from root...');
+      execSync('cd frontend && npm run build', { stdio: 'inherit' });
+      
+      if (fs.existsSync(buildPath)) {
+        console.log('✅ Alternative build completed successfully!');
+        console.log('📂 Build directory contents:', fs.readdirSync(buildPath));
+      }
+    } catch (altError) {
+      console.log('❌ Alternative build also failed:', altError.message);
+    }
   }
   
   // Check alternative paths as fallback
