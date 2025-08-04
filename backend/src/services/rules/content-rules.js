@@ -307,18 +307,32 @@ class ContentRules {
 
     // Image alt text issues
     if (results.images.withoutAlt > 0) {
+      const imagesWithoutAlt = results.images.images
+        .filter(img => !img.hasAlt)
+        .slice(0, 10)
+        .map(img => img.src)
+        .join(', ');
+      
       issues.push({
         type: 'content',
         severity: 'warning',
-        message: `alt属性が設定されていない画像があります (${results.images.withoutAlt}/${results.images.total}枚)`
+        message: `alt属性が設定されていない画像があります (${results.images.withoutAlt}/${results.images.total}枚)`,
+        details: `例: ${imagesWithoutAlt}${results.images.withoutAlt > 10 ? ' など' : ''}`
       });
     }
 
     if (results.images.withEmptyAlt > 0) {
+      const imagesWithEmptyAlt = results.images.images
+        .filter(img => img.hasEmptyAlt)
+        .slice(0, 10)
+        .map(img => img.src)
+        .join(', ');
+      
       issues.push({
         type: 'content',
         severity: 'info',
-        message: `alt属性が空の画像があります (${results.images.withEmptyAlt}/${results.images.total}枚)`
+        message: `alt属性が空の画像があります (${results.images.withEmptyAlt}/${results.images.total}枚)`,
+        details: `例: ${imagesWithEmptyAlt}${results.images.withEmptyAlt > 10 ? ' など' : ''}`
       });
     }
 
@@ -332,10 +346,18 @@ class ContentRules {
     }
 
     if (results.links.emptyAnchors > 0) {
+      const allLinks = [...results.links.internal.links, ...results.links.external.links];
+      const emptyAnchorLinks = allLinks
+        .filter(link => link.isEmpty)
+        .slice(0, 10)
+        .map(link => link.href)
+        .join(', ');
+      
       issues.push({
         type: 'content',
         severity: 'info',
-        message: `アンカーテキストが空のリンクがあります (${results.links.emptyAnchors}個)`
+        message: `アンカーテキストが空のリンクがあります (${results.links.emptyAnchors}個)`,
+        details: `例: ${emptyAnchorLinks}${results.links.emptyAnchors > 10 ? ' など' : ''}`
       });
     }
 
