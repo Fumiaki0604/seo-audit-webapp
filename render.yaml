@@ -2,9 +2,11 @@ services:
   - type: web
     name: seo-audit-webapp
     env: node
-    buildCommand: npm run build
+    buildCommand: npm ci && cd backend && npm ci && cd ../frontend && npm ci && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
+      - key: CI
+        value: false
     healthCheckPath: /health

@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,18 +28,62 @@ app.get('/health', (req, res) => {
 
 // Serve static files from React build
 const buildPath = path.join(__dirname, 'frontend/build');
-app.use(express.static(buildPath));
+
+// Debug: Log build path and directory contents
+console.log('🔍 Build path:', buildPath);
+console.log('📁 Build directory exists:', fs.existsSync(buildPath));
+if (fs.existsSync(buildPath)) {
+  console.log('📂 Build directory contents:', fs.readdirSync(buildPath));
+} else {
+  console.log('❌ Build directory not found, checking alternatives...');
+  // Check if we're in a different directory structure (Render deployment)
+  const alternativePaths = [
+    path.join(__dirname, 'build'),
+    path.join(process.cwd(), 'frontend/build'),
+    path.join(process.cwd(), 'build')
+  ];
+  
+  for (const altPath of alternativePaths) {
+    console.log(`🔍 Checking alternative path: ${altPath}`);
+    if (fs.existsSync(altPath)) {
+      console.log(`✅ Found build at: ${altPath}`);
+    }
+  }
+}
+
+// Only serve static files if build directory exists
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+}
 
 // Serve React app for all other routes
 app.get('*', (req, res) => {
   const indexPath = path.join(buildPath, 'index.html');
   
   // Check if build directory exists
-  if (!require('fs').existsSync(buildPath)) {
+  if (!fs.existsSync(buildPath)) {
     return res.status(500).json({
       success: false,
-      message: 'Frontend build not found. Please run npm run build first.',
-      error: { status: 500 }
+      message: 'Frontend build not found. The build process may have failed.',
+      error: { 
+        status: 500,
+        buildPath: buildPath,
+        currentWorkingDirectory: process.cwd(),
+        directoryContents: fs.readdirSync(process.cwd())
+      }
+    });
+  }
+  
+  // Check if index.html exists
+  if (!fs.existsSync(indexPath)) {
+    return res.status(500).json({
+      success: false,
+      message: 'Frontend index.html not found in build directory.',
+      error: { 
+        status: 500,
+        indexPath: indexPath,
+        buildContents: fs.readdirSync(buildPath)
+      }
     });
   }
   
