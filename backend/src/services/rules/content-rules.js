@@ -138,14 +138,17 @@ class ContentRules {
           return;
         }
 
-        // Check if link contains images with alt text
+        // Check if link contains images (with or without alt text)
         const images = $(element).find('img');
-        let hasImageWithAlt = false;
+        let hasImage = images.length > 0;
+        let hasImageWithMeaningfulAlt = false;
         if (images.length > 0) {
           images.each((imgIndex, imgElement) => {
             const alt = $(imgElement).attr('alt');
-            if (alt && alt.trim().length > 0) {
-              hasImageWithAlt = true;
+            // alt="" (empty) is valid for decorative images
+            // alt attribute exists (even if empty) means the image is properly labeled
+            if (alt !== undefined) {
+              hasImageWithMeaningfulAlt = true;
               return false; // break the loop
             }
           });
@@ -156,8 +159,9 @@ class ContentRules {
           const linkData = {
             href,
             text,
-            isEmpty: !text && !hasImageWithAlt,
-            hasImageWithAlt,
+            isEmpty: !text && !hasImage,
+            hasImage,
+            hasImageWithMeaningfulAlt,
             url: linkUrl.href
           };
 
