@@ -3,10 +3,17 @@ services:
     name: seo-audit-webapp
     env: node
     buildCommand: |
-      npm ci
-      cd backend && npm ci && cd ..
-      cd frontend && npm ci && npm run build && cd ..
-      echo "Build completed successfully"
+      echo "Starting build process..."
+      npm ci --production=false --silent
+      echo "Installing backend dependencies..."
+      (cd backend && npm ci --production=false --silent)
+      echo "Installing frontend dependencies..."
+      (cd frontend && npm ci --production=false --silent)
+      echo "Building frontend..."
+      (cd frontend && CI=false npm run build)
+      echo "Verifying build..."
+      ls -la frontend/build/ || echo "Build directory not found"
+      echo "Build process completed"
     startCommand: node server.js
     envVars:
       - key: NODE_ENV
