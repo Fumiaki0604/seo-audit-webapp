@@ -4,8 +4,10 @@ services:
     env: node
     buildCommand: |
       npm ci
-      npm run build
-    startCommand: npm start
+      cd backend && npm ci && cd ..
+      cd frontend && npm ci && npm run build && cd ..
+      echo "Build completed successfully"
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
