@@ -27,7 +27,7 @@ class SEOAnalyzer {
         
         // SEO analysis results
         meta: metaRules.analyze($, url),
-        content: contentRules.analyze($, url),
+        content: contentRules.analyze($, url, fetchResult.html),
         technical: techRules.analyze(fetchResult, $),
         
         // Overall scoring
