@@ -21,7 +21,7 @@ router.post('/', validateUrl, async (req, res, next) => {
       success: true,
       data: {
         ...results,
-        meta: {
+        _meta: {
           analysisTime,
           timestamp: new Date().toISOString(),
           apiVersion: '1.0.0'
