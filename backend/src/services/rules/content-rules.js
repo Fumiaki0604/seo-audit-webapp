@@ -154,14 +154,38 @@ class ContentRules {
           });
         }
 
+        // Check if link has CSS background image or icon classes
+        let hasCssBackground = false;
+        const classAttr = $(element).attr('class') || '';
+        const styleAttr = $(element).attr('style') || '';
+        
+        // Common patterns for background images or icons
+        const backgroundPatterns = [
+          /background-image\s*:/i,
+          /background\s*:[^;]*url\(/i,
+          /icon/i,
+          /btn/i,
+          /button/i,
+          /logo/i,
+          /sprite/i,
+          /bg-/i,
+          /social/i,
+          /share/i
+        ];
+        
+        hasCssBackground = backgroundPatterns.some(pattern => 
+          pattern.test(classAttr) || pattern.test(styleAttr)
+        );
+
         try {
           const linkUrl = new URL(href, url);
           const linkData = {
             href,
             text,
-            isEmpty: !text && !hasImage,
+            isEmpty: !text && !hasImage && !hasCssBackground,
             hasImage,
             hasImageWithMeaningfulAlt,
+            hasCssBackground,
             url: linkUrl.href
           };
 
@@ -339,12 +363,12 @@ class ContentRules {
           if (match) {
             const lines = htmlSource.substring(0, match.index).split('\n');
             const lineNumber = lines.length;
-            detailsText += `・ ${match[0].length > 80 ? match[0].substring(0, 80) + '...' : match[0]} （${lineNumber}行目）\n`;
+            detailsText += `・ ${match[0].length > 80 ? match[0].substring(0, 80) + '...' : match[0]} （${lineNumber}行目）\n\n`;
           } else {
-            detailsText += `・ src="${img.src}"\n`;
+            detailsText += `・ src="${img.src}"\n\n`;
           }
         } else {
-          detailsText += `・ src="${img.src}"\n`;
+          detailsText += `・ src="${img.src}"\n\n`;
         }
       });
       if (results.images.withoutAlt > 10) {
@@ -373,12 +397,12 @@ class ContentRules {
           if (match) {
             const lines = htmlSource.substring(0, match.index).split('\n');
             const lineNumber = lines.length;
-            detailsText += `・ ${match[0].length > 80 ? match[0].substring(0, 80) + '...' : match[0]} （${lineNumber}行目）\n`;
+            detailsText += `・ ${match[0].length > 80 ? match[0].substring(0, 80) + '...' : match[0]} （${lineNumber}行目）\n\n`;
           } else {
-            detailsText += `・ src="${img.src}"\n`;
+            detailsText += `・ src="${img.src}"\n\n`;
           }
         } else {
-          detailsText += `・ src="${img.src}"\n`;
+          detailsText += `・ src="${img.src}"\n\n`;
         }
       });
       if (results.images.withEmptyAlt > 10) {
@@ -417,12 +441,12 @@ class ContentRules {
           if (match) {
             const lines = htmlSource.substring(0, match.index).split('\n');
             const lineNumber = lines.length;
-            detailsText += `・ ${match[0].length > 80 ? match[0].substring(0, 80) + '...' : match[0]} （${lineNumber}行目）\n`;
+            detailsText += `・ ${match[0].length > 80 ? match[0].substring(0, 80) + '...' : match[0]} （${lineNumber}行目）\n\n`;
           } else {
-            detailsText += `・ href="${link.href}"\n`;
+            detailsText += `・ href="${link.href}"\n\n`;
           }
         } else {
-          detailsText += `・ href="${link.href}"\n`;
+          detailsText += `・ href="${link.href}"\n\n`;
         }
       });
       if (results.links.emptyAnchors > 10) {
