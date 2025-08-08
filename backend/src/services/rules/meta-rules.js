@@ -108,56 +108,73 @@ class MetaRules {
   calculateScore(results) {
     let score = 0;
     let maxScore = 0;
+    let breakdown = {};
 
     // Title (25 points)
     maxScore += 25;
+    let titleScore = 0;
     if (results.title.exists && !results.title.isEmpty) {
       if (results.title.optimal) {
-        score += 25;
+        titleScore = 25;
       } else if (results.title.tooShort || results.title.tooLong) {
-        score += 15;
+        titleScore = 15;
       } else {
-        score += 20;
+        titleScore = 20;
       }
     }
+    score += titleScore;
+    breakdown.title = { score: titleScore, maxScore: 25 };
 
     // Description (25 points)
     maxScore += 25;
+    let descriptionScore = 0;
     if (results.description.exists && !results.description.isEmpty) {
       if (results.description.optimal) {
-        score += 25;
+        descriptionScore = 25;
       } else if (results.description.tooShort || results.description.tooLong) {
-        score += 15;
+        descriptionScore = 15;
       } else {
-        score += 20;
+        descriptionScore = 20;
       }
     }
+    score += descriptionScore;
+    breakdown.description = { score: descriptionScore, maxScore: 25 };
 
     // Canonical (10 points)
     maxScore += 10;
+    let canonicalScore = 0;
     if (results.canonical.exists) {
-      score += 10;
+      canonicalScore = 10;
     }
+    score += canonicalScore;
+    breakdown.canonical = { score: canonicalScore, maxScore: 10 };
 
     // Open Graph (20 points)
     maxScore += 20;
+    let ogScore = 0;
     if (results.openGraph.exists) {
-      let ogScore = 5; // Base points for existence
+      ogScore = 5; // Base points for existence
       if (results.openGraph.hasTitle) ogScore += 5;
       if (results.openGraph.hasDescription) ogScore += 5;
       if (results.openGraph.hasImage) ogScore += 5;
-      score += ogScore;
     }
+    score += ogScore;
+    breakdown.openGraph = { score: ogScore, maxScore: 20 };
 
     // Twitter Card (20 points)
     maxScore += 20;
+    let twitterScore = 0;
     if (results.twitterCard.exists) {
-      let twitterScore = 5; // Base points for existence
+      twitterScore = 5; // Base points for existence
       if (results.twitterCard.hasCard) twitterScore += 5;
       if (results.twitterCard.hasTitle) twitterScore += 5;
       if (results.twitterCard.hasDescription) twitterScore += 5;
-      score += twitterScore;
     }
+    score += twitterScore;
+    breakdown.twitterCard = { score: twitterScore, maxScore: 20 };
+
+    // Store breakdown in results for external access
+    results.scoreBreakdown = breakdown;
 
     return Math.round((score / maxScore) * 100);
   }

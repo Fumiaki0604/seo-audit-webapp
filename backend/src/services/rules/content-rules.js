@@ -247,57 +247,79 @@ class ContentRules {
   calculateScore(results) {
     let score = 0;
     let maxScore = 0;
+    let breakdown = {};
 
     // Text length (20 points)
     maxScore += 20;
+    let textScore = 0;
     if (results.textLength.optimal) {
-      score += 20;
+      textScore = 20;
     } else if (results.textLength.total > 100) {
-      score += 10;
+      textScore = 10;
     }
+    score += textScore;
+    breakdown.textLength = { score: textScore, maxScore: 20 };
 
     // H1 tag (20 points)
     maxScore += 20;
+    let h1Score = 0;
     if (results.headings.hasH1 && !results.headings.multipleH1) {
-      score += 20;
+      h1Score = 20;
     } else if (results.headings.hasH1) {
-      score += 10;
+      h1Score = 10;
     }
+    score += h1Score;
+    breakdown.headings = { score: h1Score, maxScore: 20 };
 
     // Heading hierarchy (10 points)
     maxScore += 10;
+    let hierarchyScore = 0;
     if (results.headings.hierarchyValid) {
-      score += 10;
+      hierarchyScore = 10;
     }
+    score += hierarchyScore;
+    breakdown.headingHierarchy = { score: hierarchyScore, maxScore: 10 };
 
     // Images with alt text (20 points)
     maxScore += 20;
+    let imagesScore = 0;
     if (results.images.total > 0) {
       const altRatio = results.images.withAlt / results.images.total;
-      score += Math.round(20 * altRatio);
+      imagesScore = Math.round(20 * altRatio);
     } else {
-      score += 20; // No images is fine
+      imagesScore = 20; // No images is fine
     }
+    score += imagesScore;
+    breakdown.images = { score: imagesScore, maxScore: 20 };
 
     // Internal links (15 points)
     maxScore += 15;
+    let linksScore = 0;
     if (results.links.internal.count > 0) {
-      score += 15;
+      linksScore = 15;
     } else if (results.links.internal.count >= 3) {
-      score += 15;
+      linksScore = 15;
     } else {
-      score += Math.round(results.links.internal.count * 5);
+      linksScore = Math.round(results.links.internal.count * 5);
     }
+    score += linksScore;
+    breakdown.internalLinks = { score: linksScore, maxScore: 15 };
 
     // Keyword density balance (15 points)
     maxScore += 15;
+    let keywordScore = 0;
     if (results.keywords.highDensityWords.length === 0) {
-      score += 15; // No keyword stuffing is good
+      keywordScore = 15; // No keyword stuffing is good
     } else if (results.keywords.highDensityWords.length <= 2) {
-      score += 10;
+      keywordScore = 10;
     } else {
-      score += 5;
+      keywordScore = 5;
     }
+    score += keywordScore;
+    breakdown.keywordDensity = { score: keywordScore, maxScore: 15 };
+
+    // Store breakdown in results for external access
+    results.scoreBreakdown = breakdown;
 
     return Math.round((score / maxScore) * 100);
   }

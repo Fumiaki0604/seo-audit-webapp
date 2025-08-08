@@ -144,52 +144,74 @@ class TechnicalRules {
   calculateScore(results) {
     let score = 0;
     let maxScore = 0;
+    let breakdown = {};
 
     // HTTPS (25 points)
     maxScore += 25;
+    let httpsScore = 0;
     if (results.https.isHTTPS) {
-      score += 25;
+      httpsScore = 25;
     }
+    score += httpsScore;
+    breakdown.https = { score: httpsScore, maxScore: 25 };
 
     // Load time (25 points)
     maxScore += 25;
+    let loadTimeScore = 0;
     if (results.loadTime.fast) {
-      score += 25;
+      loadTimeScore = 25;
     } else if (results.loadTime.acceptable) {
-      score += 15;
+      loadTimeScore = 15;
     } else if (results.loadTime.time) {
-      score += 5;
+      loadTimeScore = 5;
     }
+    score += loadTimeScore;
+    breakdown.loadTime = { score: loadTimeScore, maxScore: 25 };
 
     // Status code (20 points)
     maxScore += 20;
+    let statusCodeScore = 0;
     if (results.statusCode.success) {
-      score += 20;
+      statusCodeScore = 20;
     } else if (results.statusCode.redirect) {
-      score += 10;
+      statusCodeScore = 10;
     }
+    score += statusCodeScore;
+    breakdown.statusCode = { score: statusCodeScore, maxScore: 20 };
 
     // Responsive (15 points)
     maxScore += 15;
+    let responsiveScore = 0;
     if (results.responsive.optimal) {
-      score += 15;
+      responsiveScore = 15;
     } else if (results.responsive.hasViewportMeta) {
-      score += 10;
+      responsiveScore = 10;
     }
+    score += responsiveScore;
+    breakdown.responsive = { score: responsiveScore, maxScore: 15 };
 
     // Redirects (10 points)
     maxScore += 10;
+    let redirectsScore = 0;
     if (results.redirects.count === 0) {
-      score += 10;
+      redirectsScore = 10;
     } else if (!results.redirects.excessive) {
-      score += 5;
+      redirectsScore = 5;
     }
+    score += redirectsScore;
+    breakdown.redirects = { score: redirectsScore, maxScore: 10 };
 
     // Structured data (5 points)
     maxScore += 5;
+    let structuredDataScore = 0;
     if (results.structuredData.hasJsonLd || results.structuredData.hasMicrodata) {
-      score += 5;
+      structuredDataScore = 5;
     }
+    score += structuredDataScore;
+    breakdown.structuredData = { score: structuredDataScore, maxScore: 5 };
+
+    // Store breakdown in results for external access
+    results.scoreBreakdown = breakdown;
 
     return Math.round((score / maxScore) * 100);
   }

@@ -47,6 +47,83 @@ const ResultDisplay = ({ result, onNewAnalysis }) => {
     }
   };
 
+  const renderScoreBreakdown = (category, categoryData) => {
+    if (!categoryData.scoreBreakdown) return null;
+    
+    const getCategoryTitle = (category) => {
+      switch (category) {
+        case 'meta': return 'メタタグ';
+        case 'content': return 'コンテンツ';
+        case 'technical': return '技術的要素';
+        default: return category;
+      }
+    };
+
+    const getBreakdownItemTitle = (category, key) => {
+      if (category === 'meta') {
+        switch (key) {
+          case 'title': return 'タイトルタグ';
+          case 'description': return 'メタディスクリプション';
+          case 'canonical': return 'canonicalタグ';
+          case 'openGraph': return 'Open Graph';
+          case 'twitterCard': return 'Twitter Card';
+          default: return key;
+        }
+      } else if (category === 'content') {
+        switch (key) {
+          case 'textLength': return 'テキスト量';
+          case 'headings': return 'H1タグ';
+          case 'headingHierarchy': return '見出し構造';
+          case 'images': return '画像alt属性';
+          case 'internalLinks': return '内部リンク';
+          case 'keywordDensity': return 'キーワード密度';
+          default: return key;
+        }
+      } else if (category === 'technical') {
+        switch (key) {
+          case 'https': return 'HTTPS対応';
+          case 'loadTime': return '読み込み時間';
+          case 'statusCode': return 'ステータスコード';
+          case 'responsive': return 'レスポンシブ対応';
+          case 'redirects': return 'リダイレクト';
+          case 'structuredData': return '構造化データ';
+          default: return key;
+        }
+      }
+      return key;
+    };
+
+    return (
+      <div className="mt-3 p-3" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+        <h6 className="mb-3 text-muted">
+          <i className="bi bi-bar-chart-line me-2"></i>
+          {getCategoryTitle(category)}の採点内訳
+        </h6>
+        <div className="row">
+          {Object.entries(categoryData.scoreBreakdown).map(([key, breakdown]) => (
+            <div key={key} className="col-md-6 mb-2">
+              <div className="d-flex justify-content-between align-items-center">
+                <span className="small">{getBreakdownItemTitle(category, key)}</span>
+                <span className="small fw-bold">
+                  {breakdown.score}/{breakdown.maxScore}点
+                </span>
+              </div>
+              <div className="progress" style={{ height: '6px' }}>
+                <div 
+                  className="progress-bar" 
+                  style={{ 
+                    width: `${(breakdown.score / breakdown.maxScore) * 100}%`,
+                    backgroundColor: getCategoryScoreColor((breakdown.score / breakdown.maxScore) * 100)
+                  }}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const criticalIssues = result.data.issues.filter(issue => issue.severity === 'critical');
   const warningIssues = result.data.issues.filter(issue => issue.severity === 'warning');
   const infoIssues = result.data.issues.filter(issue => issue.severity === 'info');
@@ -127,6 +204,7 @@ const ResultDisplay = ({ result, onNewAnalysis }) => {
                     }}
                   ></div>
                 </div>
+                {renderScoreBreakdown('meta', result.data.meta)}
               </div>
 
               <div className="mb-3">
@@ -143,6 +221,7 @@ const ResultDisplay = ({ result, onNewAnalysis }) => {
                     }}
                   ></div>
                 </div>
+                {renderScoreBreakdown('content', result.data.content)}
               </div>
 
               <div className="mb-0">
@@ -159,6 +238,7 @@ const ResultDisplay = ({ result, onNewAnalysis }) => {
                     }}
                   ></div>
                 </div>
+                {renderScoreBreakdown('technical', result.data.technical)}
               </div>
             </div>
           </div>
