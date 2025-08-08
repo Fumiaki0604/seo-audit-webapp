@@ -2,11 +2,32 @@ const fetch = require('node-fetch');
 
 class Fetcher {
   constructor() {
-    this.timeout = 30000; // 30 seconds - increased for heavy websites
-    this.userAgent = 'SEO-Audit-Tool/1.0.0';
+    this.timeout = 45000; // 45 seconds - increased for problematic websites
+    this.retryAttempts = 2;
+    this.retryDelay = 2000; // 2 seconds between retries
   }
 
-  async fetch(url) {
+  getBrowserHeaders() {
+    return {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'Accept-Language': 'en-US,en;q=0.9,ja;q=0.8',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+      'Sec-Fetch-User': '?1',
+      'Upgrade-Insecure-Requests': '1'
+    };
+  }
+
+  async sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async fetchWithRetry(url, attempt = 1) {
     try {
       const startTime = Date.now();
       
@@ -16,17 +37,10 @@ class Fetcher {
 
       const response = await fetch(url, {
         signal: controller.signal,
-        headers: {
-          'User-Agent': this.userAgent,
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-          'Accept-Encoding': 'gzip, deflate',
-          'DNT': '1',
-          'Connection': 'keep-alive',
-          'Upgrade-Insecure-Requests': '1'
-        },
+        headers: this.getBrowserHeaders(),
         redirect: 'follow',
-        follow: 5
+        follow: 5,
+        compress: true
       });
 
       clearTimeout(timeoutId);
@@ -45,13 +59,23 @@ class Fetcher {
       };
 
     } catch (error) {
+      if (attempt <= this.retryAttempts) {
+        console.log(`Fetch attempt ${attempt} failed for ${url}, retrying in ${this.retryDelay}ms...`);
+        await this.sleep(this.retryDelay);
+        return this.fetchWithRetry(url, attempt + 1);
+      }
+
       let errorMessage = error.message;
       
-      // Handle AbortError specifically  
+      // Handle specific error types
       if (error.name === 'AbortError' || error.message.includes('user aborted')) {
         errorMessage = `Request timeout after ${this.timeout/1000} seconds`;
       } else if (error.name === 'FetchError') {
-        errorMessage = error.message;
+        if (error.message.includes('INTERNAL_ERROR')) {
+          errorMessage = 'Server connection error (HTTP/2 stream error) - website may have anti-bot protection';
+        } else {
+          errorMessage = error.message;
+        }
       }
       
       return {
@@ -60,6 +84,10 @@ class Fetcher {
         loadTime: null
       };
     }
+  }
+
+  async fetch(url) {
+    return this.fetchWithRetry(url);
   }
 }
 
