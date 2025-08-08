@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 class Fetcher {
   constructor() {
-    this.timeout = 10000; // 10 seconds
+    this.timeout = 30000; // 30 seconds - increased for heavy websites
     this.userAgent = 'SEO-Audit-Tool/1.0.0';
   }
 
@@ -45,19 +45,20 @@ class Fetcher {
       };
 
     } catch (error) {
-      if (error.name === 'FetchError') {
-        return {
-          url,
-          error: error.message,
-          loadTime: null
-        };
-      } else {
-        return {
-          url,
-          error: error.message,
-          loadTime: null
-        };
+      let errorMessage = error.message;
+      
+      // Handle AbortError specifically  
+      if (error.name === 'AbortError' || error.message.includes('user aborted')) {
+        errorMessage = `Request timeout after ${this.timeout/1000} seconds`;
+      } else if (error.name === 'FetchError') {
+        errorMessage = error.message;
       }
+      
+      return {
+        url,
+        error: errorMessage,
+        loadTime: null
+      };
     }
   }
 }
