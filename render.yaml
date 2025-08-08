@@ -3,14 +3,14 @@ services:
     name: seo-audit-webapp
     env: node
     buildCommand: |
-      echo "Starting build process..."
+      echo "Starting optimized build process..."
       npm ci --production=false --silent
       echo "Installing backend dependencies..."
       (cd backend && npm ci --production=false --silent)
       echo "Installing frontend dependencies..."
-      (cd frontend && npm ci --production=false --silent)
-      echo "Building frontend..."
-      (cd frontend && CI=false npm run build)
+      (cd frontend && npm ci --production=false --silent --no-audit --no-fund)
+      echo "Building frontend with optimizations..."
+      (cd frontend && NODE_OPTIONS='--max-old-space-size=4096' CI=false GENERATE_SOURCEMAP=false npm run build:fast)
       echo "Verifying build..."
       ls -la frontend/build/ || echo "Build directory not found"
       echo "Build process completed"
@@ -22,4 +22,6 @@ services:
         value: false
       - key: GENERATE_SOURCEMAP
         value: false
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=4096"
     healthCheckPath: /health
